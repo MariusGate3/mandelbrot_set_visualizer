@@ -1,6 +1,6 @@
 import pygame
 
-size = 200
+size = 500
 window_x = size
 window_y = size
 

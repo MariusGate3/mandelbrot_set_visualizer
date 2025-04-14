@@ -3,6 +3,7 @@ import numpy as np
 import pygame
 import config
 import time
+import math
 
 
 def z(z, c):
@@ -34,8 +35,7 @@ def generate_mandelbrot(points, max_iterations):
 
 
 def g_mandelbrot_pygame(max_iterations, xmin, xmax, ymin, ymax):
-    xmin, xmax = -1.5, 1.5
-    ymin, ymax = -1.5, 1.5
+
     points = config.window_x * config.window_y
     count = 0
     for p_x in range(config.window_x):
@@ -55,8 +55,9 @@ def g_mandelbrot_pygame(max_iterations, xmin, xmax, ymin, ymax):
             if in_mandelbrot:
                 config.screen.set_at((p_x, p_y), (0, 0, 0))
             else:
-                r = int(255 * (iterations_taken / max_iterations))
-                g = int(255 * ((iterations_taken / max_iterations) ** 0.5))
+                value = math.log(iterations_taken + 1) / math.log(max_iterations)
+                r = int(255 * value)
+                g = int(255 * (value**0.5))
                 b = 255 - r
                 color = (r, g, b)
                 config.screen.set_at((p_x, p_y), color)
@@ -76,7 +77,9 @@ if __name__ == "__main__":
     running = True
     config.screen.fill((255, 255, 255))
     start = time.time()
-    g_mandelbrot_pygame(50, -1.5, 1.5, -1.5, 1.5)
+    max_iterations = 1000
+    xmin, xmax, ymin, ymax = (-1.5, -1, 0, 0.5)
+    g_mandelbrot_pygame(max_iterations, xmin, xmax, ymin, ymax)
     end = time.time()
     print(f"Time taken: {end - start:.4f} seconds")
     pygame.display.flip()
@@ -90,4 +93,7 @@ if __name__ == "__main__":
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
                 elif event.key == pygame.K_0:
-                    pygame.image.save(config.screen, "mandelbrot.jpeg")
+                    pygame.image.save(
+                        config.screen,
+                        f"mandelbrot_max_iters{max_iterations}_size{config.size}_xaxis{xmin}v{xmax}_yaxis{ymin}v{ymax}.jpeg",
+                    )
